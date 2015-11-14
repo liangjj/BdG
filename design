@@ -1,0 +1,73 @@
+We start from several classes that define a system.
+
+1. Material:    A group of material-dependent parameters. Switching material is as
+                simple as interchanging material-objects when creating a system.
+                Fields: - Carrier density
+                        - Debye energy
+                        - Elphon coupling lambda
+                        - V0 (at the moment?)
+
+2. Structure:   Defines the spatial structure of the system: how many dimensions
+                and what size in each dimension?
+                Fields: - Array of lengths (Lx, Ly, Lz)
+                        - Number of dimensions (length of array)
+                MAYBE: Define an "integrator" over k-space?
+                
+3. Model:       Defines what effects we want to consider, the broadenings 
+                associated with them, and the modifications of the spectrum and
+                dos.
+                Fields: - Electron-phonon (boolean)
+                        - Electron-electron (boolean)
+                        - Electron-disorder (boolean)
+                        - Ahronov - Altshuler (boolean)
+                        - Electron - impurity (boolean)
+                Methods:- Spectrum (modified)
+                        - DOS (modified)
+                        - Broadenings due to each effect
+
+
+Using these, we can define a System. A system should take these things and
+generate its own parameters (through the Parameters class).
+
+4. System:      A system takes a Material, a Structure and a Model, and 
+                generates a Parameters object from these. Its responsibility is
+                to calculate the superconducting properties. Tc and Delta.
+
+                Fields: - Model
+                        - Structure
+                        - Parameters
+                Methods:- getTc
+                        - getDelta(T)
+
+
+5. Parameters:  All kinds of derived quantities that depend on the Material
+                properties, the model used, and the dimensions.
+                Fields: - Carrier density
+                        - Debye energy
+                        - Elphon coupling
+                        - V0
+                        - EF_bulk
+                        - N0_bulk
+                        - Actual EF/chemical potential
+                        - Actual N0
+                        - Fermi momentum, velocity, debye temp.
+                        - Max band index, max k-vector 
+
+Extra classes:
+
+a. PlotterK:    Plots stuff in k-space
+b. PlorrerE:    Plots stuff against energy
+c. PlotterR:    Plots real-space stuff
+d. Integrator:  Integrates stuff over the proper dimensions. (k-space)
+
+
+Thinking:
+
+How should the Integrator work? It should be instantly compatible with what's
+passed to it (functions or arrays). Preferably functions, actually. That could
+be the advantage: keep working with actual functions for as long as you can. 
+Only perform the integrations at the end. It would be cool if I could pull this
+off... Might have to write my own convolution function etc to make this work...
+Don't forget, broadenings are also functions of k and i... This could get
+tricky...
+
