@@ -147,6 +147,7 @@ class Parameters:
         return np.sqrt((mu + hw_debye - pi**2/L**2)/h22m)
 
     def print_parameters(self):
+        # TODO: Use string formatting after all...
         str = s.Template("""
         *** Fundamental parameters ********************************************
         Debye energy    = $debye Ha,          Carrier density = $n Bohr^-3
