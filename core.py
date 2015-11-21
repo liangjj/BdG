@@ -20,10 +20,18 @@ class Hamiltonian:
     '''
 
     def __init__(self, struc):
-        Ls = struc.dims
+        self.spectrum = self.free_spectrum
 
-        def free_spectrum(k, i):
-            return h22m * (np.sum(k.T**2, 0) +
-                           np.sum(((i.T + 1) * pi / Ls[None, :])**2, 0))
 
-        self.spectrum = free_spectrum
+    def free_spectrum(kx, ky, kz):
+        """ Return the quadratic spectrum
+
+        We implicitely assume any of the passed k's can be a discrete set
+        of bands, though provided in the form (i+1)²pi²/L².
+        """
+        return h22m * (kx**2 + ky**2 + kz**2)
+
+    def dos(self, struc):
+        n = struc.ndim
+
+        return  
