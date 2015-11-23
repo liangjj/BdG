@@ -19,9 +19,8 @@ class Hamiltonian:
             - Dos (function)
     '''
 
-    def __init__(self, struc):
+    def __init__(self):
         self.spectrum = self.free_spectrum
-
 
     def free_spectrum(kx, ky, kz):
         """ Return the quadratic spectrum
@@ -31,7 +30,34 @@ class Hamiltonian:
         """
         return h22m * (kx**2 + ky**2 + kz**2)
 
-    def dos(self, struc):
-        n = struc.ndim
 
-        return  
+class System:
+    ''' A system is responsible for calculating the superconducting properties.
+
+    A system is defined by a Hamiltonian and a set of system parameters, and can
+    calculate the superconducting properties from this. (Tc and Delta, and maybe
+    more).
+    '''
+
+    def __init__(ham, par, struct):
+        self.H = ham
+        self.par = par
+        self.struct = struct
+
+    def overlaps():
+        """ The interaction matrix elements.
+
+        These are given by the wavefunction overlaps of the simple free-particle
+        wavefunctions.
+        At the moment, this is only implemented for 2D!
+        """
+
+        size = self.par.imax
+        Lz = self.struct.dims[-1]
+        return (np.ones(size, size) + np.identity(size, size))/Lz
+
+    def getTc():
+        phi = overlaps()
+        integrator = Integrator(self.struct)
+        kx, ky, kz = integrator.getkpoints()
+        ksi = self.H.spectrum(kx, ky, kz)
