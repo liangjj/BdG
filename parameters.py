@@ -173,3 +173,15 @@ class Parameters:
                                           EF_3D=self.EF_3D,
                                           N0_3D=self.N0_3D,
                                           vF=0.0)))
+
+
+class Integrator:
+    """ Class that has knowledge of k-space and can do integrations etc...
+
+    From a Structure, we can deduce the k-space structure. We can use an
+    Integrator object to do summations over (regions of) k-space.
+    """
+
+    def __init__(struct):
+        self.dims = struct.dims
+        self.ndim = struct.ndim
