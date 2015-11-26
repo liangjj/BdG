@@ -181,7 +181,32 @@ class Integrator:
     From a Structure, we can deduce the k-space structure. We can use an
     Integrator object to do summations over (regions of) k-space.
     """
+    N = 200 # Number of samples for continuous integration
 
     def __init__(struct):
-        self.dims = struct.dims
-        self.ndim = struct.ndim
+        if struct.ndim == 0:
+            self.Lx, self.Ly, self.Lz = struct.dims[:]
+            self.dx, self.dy, self.dz = 1/struct.dims[:]
+        elif ndim == 1:
+            self.Lx = 0
+            self.Ly, self.Lz = struct.dims[:]
+            self.dx = 1/self.N
+            self.dy, self.dz = 1/struct.dims[:]
+        elif ndim == 2:
+            self.Lx = self.Ly = 0
+            self.Lz = struct.dims[0]
+            self.dx = self.dy = 1/self.N
+            self.dz = 1/struct.dims[0]
+        elif ndim == 3:
+            self.Lx = self.Ly = self.Lz = 0
+            self.dx = self.dy = self.dz = 1/self.N
+
+    def integrate_selective(f, axes, klims):
+        """ Integrate over a subset of dimensions (hence selective).
+
+        Integrate the passed function (assumed to be R3 -> R) over the subset 
+        of axes passed in 'axes', with limits going from 0 to 'klims'.
+        """
+
+        
+
