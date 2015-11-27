@@ -76,18 +76,18 @@ class Parameters:
             self.Lx = structure.dims[0]
             self.Ly = structure.dims[1]
             self.Lz = structure.dims[2]
-            self.Mu = 0.0
-            self.N0 = 0.0
-            self.kmax = 0
-            self.nu = 0
+            self.Mu = 1.0
+            self.N0 = 1.0
+            self.kmax = 1
+            self.nu = 1
         elif structure.ndim == 1:
             # Quantum wire
             self.Lx = structure.dims[0]
             self.Ly = structure.dims[1]
-            self.Mu = 0.0
-            self.N0 = 0.0
-            self.kmax = 0
-            self.nu = 0
+            self.Mu = 1.0
+            self.N0 = 1.0
+            self.kmax = 1
+            self.nu = 1
         elif structure.ndim == 2:
             # Film
             self.Lz = structure.dims[0]
@@ -99,8 +99,8 @@ class Parameters:
         elif structure.ndim == 3:
             self.Mu = self.EF_3D
             self.N0 = self.N0_3D
-            self.nu = 0
-            self.kmax = 0.0
+            self.nu = 0.1
+            self.kmax = 10.0
 
     # Auxiliary routines
     def calculate_chempot(self, n, nu, L):
@@ -183,30 +183,54 @@ class Integrator:
     """
     N = 200 # Number of samples for continuous integration
 
-    def __init__(struct):
+    def __init__(self, struct):
         if struct.ndim == 0:
             self.Lx, self.Ly, self.Lz = struct.dims[:]
             self.dx, self.dy, self.dz = 1/struct.dims[:]
-        elif ndim == 1:
+        elif struct.ndim == 1:
             self.Lx = 0
             self.Ly, self.Lz = struct.dims[:]
             self.dx = 1/self.N
             self.dy, self.dz = 1/struct.dims[:]
-        elif ndim == 2:
+        elif struct.ndim == 2:
             self.Lx = self.Ly = 0
             self.Lz = struct.dims[0]
             self.dx = self.dy = 1/self.N
             self.dz = 1/struct.dims[0]
-        elif ndim == 3:
+        elif struct.ndim == 3:
             self.Lx = self.Ly = self.Lz = 0
             self.dx = self.dy = self.dz = 1/self.N
 
-    def integrate_selective(f, axes, klims):
+    def create_arrays(self, lims, axes):
+        if 0 in axes:
+            idx = axes.index(0)
+            X = np.arange(0, lims[idx], self.dx)[:, None, None]
+        else:
+            X = np.array([0])[:,None, None] 
+
+        if 1 in axes:
+            idy = axes.index(1)
+            Y = np.arange(0, lims[idy], self.dy)[None, :, None]
+        else:
+            Y = np.array([0])[None, :, None] 
+
+        if 2 in axes:
+            idz = axes.index(2)
+            Z = np.arange(0, lims[idz], self.dz)[None, None, :]
+        else:
+            Z = np.array([0])[None, None, :] 
+
+        return X, Y, Z
+    
+    def integrate(self, f, lims, axes = [0,1,2]):
         """ Integrate over a subset of dimensions (hence selective).
 
         Integrate the passed function (assumed to be R3 -> R) over the subset 
         of axes passed in 'axes', with limits going from 0 to 'klims'.
+        The trick is that skipped dimensions are represented by a 1-element
+        array [[[0]]]. This is necessary, because we assume the passed function
+        f to accept 3 arrays, so we can't skip any...
         """
-
-        
-
+        X, Y, Z = self.create_arrays(lims, axes)
+        fvals = f(X, Y, Z)
+        return self.dx*self.dy*self.dz*np.sum(fvals, keepdims=True)
