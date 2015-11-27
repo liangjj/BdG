@@ -22,7 +22,7 @@ class Hamiltonian:
     def __init__(self):
         self.spectrum = self.free_spectrum
 
-    def free_spectrum(kx, ky, kz):
+    def free_spectrum(self, kx, ky, kz):
         """ Return the quadratic spectrum
 
         We implicitely assume any of the passed k's can be a discrete set
