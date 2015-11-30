@@ -8,5 +8,7 @@ params = Parameters(tin, struct)
 print(params.print_parameters())
 ham = Hamiltonian()
 integrator = Integrator(struct)
+sys = System(ham, params, struct)
 
 print(integrator.integrate(ham.spectrum, [10, 10, 10]))
+print(sys.getTc())
