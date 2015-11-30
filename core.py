@@ -9,7 +9,7 @@ Classes contained:
 
 import numpy as np
 from constants import *
-from parameters import Material, Structure, Parameters
+from parameters import Material, Structure, Parameters, Integrator
 
 
 class Hamiltonian:
@@ -39,12 +39,12 @@ class System:
     more).
     '''
 
-    def __init__(ham, par, struct):
+    def __init__(self, ham, par, struct):
         self.H = ham
         self.par = par
         self.struct = struct
 
-    def overlaps():
+    def overlaps(self):
         """ The interaction matrix elements.
 
         These are given by the wavefunction overlaps of the simple free-particle
@@ -52,12 +52,25 @@ class System:
         At the moment, this is only implemented for 2D!
         """
 
-        size = self.par.imax
+        size = self.par.nu
         Lz = self.struct.dims[-1]
-        return (np.ones(size, size) + np.identity(size, size))/Lz
+        return (np.ones((size, size)) + np.identity(size))/Lz
 
-    def getTc():
-        phi = overlaps()
+    def thermal_weight_LO(ksi, T):
+        ''' The thermal weight appearing in the band gap equation.
+
+        A factor proportional to tanh(beta E) weights the "propagator"
+        1/E. (Where E = sqrt(ksi^2 + Delta^2). To leading order (hence LO), the
+        Delta's drop out, and we get a factor tanh(beta ksi)/ksi.
+        
+        This is simply a function from R -> R, but can be vectorized (in light
+        of the composition shenanigans I intend to perform).
+        '''
+
+        return np.tanh(ksi/(2*kB*T))/ksi 
+
+    def getTc(self):
+        Phi = self.overlaps()
         integrator = Integrator(self.struct)
-        kx, ky, kz = integrator.getkpoints()
-        ksi = self.H.spectrum(kx, ky, kz)
+        
+        return "Hello!"
