@@ -48,6 +48,8 @@ class Structure:
         self.dims = dims
         self.ndim = 3-dims.size
 
+    def cont_dims():
+        return "HELLO!"
 
 class Parameters:
     ''' Class that holds all derived system parameters.
@@ -95,6 +97,7 @@ class Parameters:
             self.N0 = 1/(4 * pi * h22m)/self.Lz
             self.Mu = self.chemical_potential(self.carrier_density, self.Lz)
             self.nu = self.get_imax(self.Mu, self.Lz)
+            self.imax = self.nu # Just because I tend to use both...
             self.kmax = self.get_kmax(self.hw_debye, self.Mu, self.Lz)
         elif structure.ndim == 3:
             self.Mu = self.EF_3D
