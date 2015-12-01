@@ -28,6 +28,7 @@ class Hamiltonian:
         We implicitely assume any of the passed k's can be a discrete set
         of bands, though provided in the form (i+1)²pi²/L².
         """
+        print(kx.shape)
         return h22m * (kx**2 + ky**2 + kz**2)
 
 
@@ -56,7 +57,20 @@ class System:
         Lz = self.struct.dims[-1]
         return (np.ones((size, size)) + np.identity(size))/Lz
 
-    def thermal_weight_LO(ksi, T):
+    def thermal_weight_LO_k(self, kx, ky, kz, T):
+        ''' The thermal weight appearing in the band gap equation.
+
+        A factor proportional to tanh(beta E) weights the "propagator"
+        1/E. (Where E = sqrt(ksi^2 + Delta^2). To leading order (hence LO), the
+        Delta's drop out, and we get a factor tanh(beta ksi)/ksi.
+        
+        This is simply a function from R^3 -> R, but can be vectorized (in light
+        of the composition shenanigans I intend to perform).
+        '''
+        ksi = self.H.spectrum(kx, ky, kz)
+        return np.tanh(ksi/(2*kB*T))/ksi 
+
+    def thermal_weight_LO(self, ksi, T):
         ''' The thermal weight appearing in the band gap equation.
 
         A factor proportional to tanh(beta E) weights the "propagator"
@@ -72,5 +86,9 @@ class System:
     def getTc(self):
         Phi = self.overlaps()
         integrator = Integrator(self.struct)
-        
-        return "Hello!"
+        T = 0.1
+        dims = self.struct.cont_dims
+        lims = 2*np.ones(len(dims))
+        A = integrator.integrate(lambda x,y,z: self.thermal_weight_LO_k(x, y, z, T),
+                lims, dims)
+        return A
