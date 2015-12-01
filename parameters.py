@@ -47,9 +47,8 @@ class Structure:
     def __init__(self, dims):
         self.dims = dims
         self.ndim = 3-dims.size
-
-    def cont_dims():
-        return "HELLO!"
+        self.cont_dims = [0,1,2][:self.ndim]
+        self.discr_dims = [0,1,2][self.ndim:]
 
 class Parameters:
     ''' Class that holds all derived system parameters.
@@ -184,7 +183,7 @@ class Integrator:
     From a Structure, we can deduce the k-space structure. We can use an
     Integrator object to do summations over (regions of) k-space.
     """
-    N = 200 # Number of samples for continuous integration
+    N = 50 # Number of samples for continuous integration
 
     def __init__(self, struct):
         if struct.ndim == 0:
@@ -206,18 +205,21 @@ class Integrator:
 
     def create_arrays(self, lims, axes):
         if 0 in axes:
+            print("Setting x axis")
             idx = axes.index(0)
             X = np.arange(0, lims[idx], self.dx)[:, None, None]
         else:
             X = np.array([0])[:,None, None] 
 
         if 1 in axes:
+            print("Setting y axis")
             idy = axes.index(1)
             Y = np.arange(0, lims[idy], self.dy)[None, :, None]
         else:
             Y = np.array([0])[None, :, None] 
 
         if 2 in axes:
+            print("Setting z axis")
             idz = axes.index(2)
             Z = np.arange(0, lims[idz], self.dz)[None, None, :]
         else:
